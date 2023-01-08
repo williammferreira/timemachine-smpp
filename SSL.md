@@ -8,7 +8,7 @@ The purpose of this document is to provide a summary of how to configuration SSL
 
     // Configure the server as you normally would:
     SmppServerConfiguration configuration = new SmppServerConfiguration();
-    configuration.setPort(2776);
+    configuration.setPort(2775);
     ...
 
     // Then create a SSL configuration:
@@ -24,11 +24,9 @@ The purpose of this document is to provide a summary of how to configuration SSL
     configuration.setUseSsl(true);
     configuration.setSslConfiguration(sslConfig);
 
-
 ### Require client auth
 
     sslConfig.setNeedClientAuth(true);
-
 
 ## Configuring a SMPP client with SSL transport
 
@@ -38,7 +36,7 @@ The purpose of this document is to provide a summary of how to configuration SSL
     SmppSessionConfiguration configuration = new SmppSessionConfiguration();
     configuration.setType(SmppBindType.TRANSCEIVER);
     configuration.setHost("127.0.0.1");
-    configuration.setPort(2776);
+    configuration.setPort(2775);
     ...
 
     // Then create a SSL configuration:
@@ -55,7 +53,6 @@ The purpose of this document is to provide a summary of how to configuration SSL
 
     sslConfig.setValidateCerts(true);
     sslConfig.setValidatePeerCerts(true);
-
 
 ## Generating key pairs and certificates
 
@@ -88,13 +85,12 @@ The following command loads a PEM encoded certificate in the smpp.crt file into 
 
 Loading Keys and Certificates via PKCS12
 
-If you have a key and certificate in separate files, you need to combine them into a PKCS12 format file to load into a new keystore. The certificate can be one you generated yourself or one returned from a CA in response to your CSR. 
+If you have a key and certificate in separate files, you need to combine them into a PKCS12 format file to load into a new keystore. The certificate can be one you generated yourself or one returned from a CA in response to your CSR.
 
 The following OpenSSL command combines the keys in smpp.key and the certificate in the smpp.crt file into the smpp.pkcs12 file.
 
     openssl pkcs12 -inkey smpp.key -in smpp.crt -export -out smpp.pkcs12
     keytool -importkeystore -srckeystore smpp.pkcs12 -srcstoretype PKCS12 -destkeystore keystore
-
 
 ## Appendix
 
@@ -103,6 +99,3 @@ The following OpenSSL command combines the keys in smpp.key and the certificate 
 This library has been tested with stunnel4 wrapping both client and servers. There is a sample stunnel.conf in src/test/resources that works with `make server` and `make ssl-client`. The SSL implementation should be compatible with other TLS/SSL encryption wrappers, assuming the JDK you are using supports the same cryptographic algorithms as the encryption wrapper.
 
 ### Known issues
-
-
-

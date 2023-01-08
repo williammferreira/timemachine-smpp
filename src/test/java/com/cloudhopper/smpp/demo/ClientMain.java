@@ -44,7 +44,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
+ * @author joelauer (twitter: @jjlauer or
+ *         <a href="http://twitter.com/jjlauer" target=
+ *         window>http://twitter.com/jjlauer</a>)
  */
 public class ClientMain {
     private static final Logger logger = LoggerFactory.getLogger(ClientMain.class);
@@ -53,27 +55,31 @@ public class ClientMain {
         //
         // setup 3 things required for any session we plan on creating
         //
-        
+
         // for monitoring thread use, it's preferable to create your own instance
-        // of an executor with Executors.newCachedThreadPool() and cast it to ThreadPoolExecutor
+        // of an executor with Executors.newCachedThreadPool() and cast it to
+        // ThreadPoolExecutor
         // this permits exposing thinks like executor.getActiveCount() via JMX possible
-        // no point renaming the threads in a factory since underlying Netty 
+        // no point renaming the threads in a factory since underlying Netty
         // framework does not easily allow you to customize your thread names
-        ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newCachedThreadPool();
-        
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+
         // to enable automatic expiration of requests, a second scheduled executor
         // is required which is what a monitor task will be executed with - this
-        // is probably a thread pool that can be shared with between all client bootstraps
-        ScheduledThreadPoolExecutor monitorExecutor = (ScheduledThreadPoolExecutor)Executors.newScheduledThreadPool(1, new ThreadFactory() {
-            private AtomicInteger sequence = new AtomicInteger(0);
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setName("SmppClientSessionWindowMonitorPool-" + sequence.getAndIncrement());
-                return t;
-            }
-        });
-        
+        // is probably a thread pool that can be shared with between all client
+        // bootstraps
+        ScheduledThreadPoolExecutor monitorExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1,
+                new ThreadFactory() {
+                    private AtomicInteger sequence = new AtomicInteger(0);
+
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread t = new Thread(r);
+                        t.setName("SmppClientSessionWindowMonitorPool-" + sequence.getAndIncrement());
+                        return t;
+                    }
+                });
+
         // a single instance of a client bootstrap can technically be shared
         // between any sessions that are created (a session can go to any different
         // number of SMSCs) - each session created under
@@ -96,7 +102,7 @@ public class ClientMain {
         config0.setName("Tester.Session.0");
         config0.setType(SmppBindType.TRANSCEIVER);
         config0.setHost("127.0.0.1");
-        config0.setPort(2776);
+        config0.setPort(2775);
         config0.setConnectTimeout(10000);
         config0.setSystemId("1234567890");
         config0.setPassword("password");
@@ -115,25 +121,28 @@ public class ClientMain {
             // create session a session by having the bootstrap connect a
             // socket, send the bind request, and wait for a bind response
             session0 = clientBootstrap.bind(config0, sessionHandler);
-            
+
             System.out.println("Press any key to send enquireLink #1");
             System.in.read();
 
             // demo of a "synchronous" enquireLink call - send it and wait for a response
             EnquireLinkResp enquireLinkResp1 = session0.enquireLink(new EnquireLink(), 10000);
-            logger.info("enquire_link_resp #1: commandStatus [" + enquireLinkResp1.getCommandStatus() + "=" + enquireLinkResp1.getResultMessage() + "]");
-            
+            logger.info("enquire_link_resp #1: commandStatus [" + enquireLinkResp1.getCommandStatus() + "="
+                    + enquireLinkResp1.getResultMessage() + "]");
+
             System.out.println("Press any key to send enquireLink #2");
             System.in.read();
 
             // demo of an "asynchronous" enquireLink call - send it, get a future,
             // and then optionally choose to pick when we wait for it
-            WindowFuture<Integer,PduRequest,PduResponse> future0 = session0.sendRequestPdu(new EnquireLink(), 10000, true);
+            WindowFuture<Integer, PduRequest, PduResponse> future0 = session0.sendRequestPdu(new EnquireLink(), 10000,
+                    true);
             if (!future0.await()) {
                 logger.error("Failed to receive enquire_link_resp within specified time");
             } else if (future0.isSuccess()) {
-                EnquireLinkResp enquireLinkResp2 = (EnquireLinkResp)future0.getResponse();
-                logger.info("enquire_link_resp #2: commandStatus [" + enquireLinkResp2.getCommandStatus() + "=" + enquireLinkResp2.getResultMessage() + "]");
+                EnquireLinkResp enquireLinkResp2 = (EnquireLinkResp) future0.getResponse();
+                logger.info("enquire_link_resp #2: commandStatus [" + enquireLinkResp2.getCommandStatus() + "="
+                        + enquireLinkResp2.getResultMessage() + "]");
             } else {
                 logger.error("Failed to properly receive enquire_link_resp: " + future0.getCause());
             }
@@ -143,24 +152,23 @@ public class ClientMain {
 
             String text160 = "\u20AC Lorem [ipsum] dolor sit amet, consectetur adipiscing elit. Proin feugiat, leo id commodo tincidunt, nibh diam ornare est, vitae accumsan risus lacus sed sem metus.";
             byte[] textBytes = CharsetUtil.encode(text160, CharsetUtil.CHARSET_GSM);
-            
+
             SubmitSm submit0 = new SubmitSm();
 
             // add delivery receipt
-            //submit0.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
+            // submit0.setRegisteredDelivery(SmppConstants.REGISTERED_DELIVERY_SMSC_RECEIPT_REQUESTED);
 
-            submit0.setSourceAddress(new Address((byte)0x03, (byte)0x00, "40404"));
-            submit0.setDestAddress(new Address((byte)0x01, (byte)0x01, "44555519205"));
+            submit0.setSourceAddress(new Address((byte) 0x03, (byte) 0x00, "40404"));
+            submit0.setDestAddress(new Address((byte) 0x01, (byte) 0x01, "44555519205"));
             submit0.setShortMessage(textBytes);
 
             SubmitSmResp submitResp = session0.submit(submit0, 10000);
-            
-            
+
             logger.info("sendWindow.size: {}", session0.getSendWindow().getSize());
-            
+
             System.out.println("Press any key to unbind and close sessions");
             System.in.read();
-            
+
             session0.unbind(5000);
         } catch (Exception e) {
             logger.error("", e);
@@ -178,7 +186,7 @@ public class ClientMain {
                 logger.info("rx-deliverSM: {}", session0.getCounters().getRxDeliverSM());
                 logger.info("rx-dataSM: {}", session0.getCounters().getRxDataSM());
             }
-            
+
             session0.destroy();
             // alternatively, could call close(), get outstanding requests from
             // the sendWindow (if we wanted to retry them later), then call shutdown()
@@ -190,7 +198,7 @@ public class ClientMain {
         clientBootstrap.destroy();
         executor.shutdownNow();
         monitorExecutor.shutdownNow();
-        
+
         logger.info("Done. Exiting");
     }
 
@@ -214,10 +222,10 @@ public class ClientMain {
             PduResponse response = pduRequest.createResponse();
 
             // do any logic here
-            
+
             return response;
         }
-        
+
     }
-    
+
 }

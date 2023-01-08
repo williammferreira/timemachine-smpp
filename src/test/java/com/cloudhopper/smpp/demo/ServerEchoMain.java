@@ -42,7 +42,6 @@ import com.cloudhopper.smpp.SmppConstants;
 import com.cloudhopper.commons.util.windowing.WindowFuture;
 import com.cloudhopper.commons.charset.CharsetUtil;
 
-
 import java.lang.ref.WeakReference;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -65,28 +64,32 @@ public class ServerEchoMain {
         //
 
         // for monitoring thread use, it's preferable to create your own instance
-        // of an executor and cast it to a ThreadPoolExecutor from Executors.newCachedThreadPool()
+        // of an executor and cast it to a ThreadPoolExecutor from
+        // Executors.newCachedThreadPool()
         // this permits exposing things like executor.getActiveCount() via JMX possible
         // no point renaming the threads in a factory since underlying Netty
         // framework does not easily allow you to customize your thread names
-        ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newCachedThreadPool();
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
         // to enable automatic expiration of requests, a second scheduled executor
         // is required which is what a monitor task will be executed with - this
-        // is probably a thread pool that can be shared with between all client bootstraps
-        ScheduledThreadPoolExecutor monitorExecutor = (ScheduledThreadPoolExecutor)Executors.newScheduledThreadPool(1, new ThreadFactory() {
-            private AtomicInteger sequence = new AtomicInteger(0);
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setName("SmppServerSessionWindowMonitorPool-" + sequence.getAndIncrement());
-                return t;
-            }
-        });
+        // is probably a thread pool that can be shared with between all client
+        // bootstraps
+        ScheduledThreadPoolExecutor monitorExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1,
+                new ThreadFactory() {
+                    private AtomicInteger sequence = new AtomicInteger(0);
+
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread t = new Thread(r);
+                        t.setName("SmppServerSessionWindowMonitorPool-" + sequence.getAndIncrement());
+                        return t;
+                    }
+                });
 
         // create a server configuration
         SmppServerConfiguration configuration = new SmppServerConfiguration();
-        configuration.setPort(2776);
+        configuration.setPort(2775);
         configuration.setMaxConnectionSize(10);
         configuration.setNonBlockingSocketsEnabled(true);
         configuration.setDefaultRequestExpiryTimeout(30000);
@@ -97,7 +100,8 @@ public class ServerEchoMain {
         configuration.setJmxEnabled(true);
 
         // create a server, start it up
-        DefaultSmppServer smppServer = new DefaultSmppServer(configuration, new DefaultSmppServerHandler(), executor, monitorExecutor);
+        DefaultSmppServer smppServer = new DefaultSmppServer(configuration, new DefaultSmppServerHandler(), executor,
+                monitorExecutor);
 
         logger.info("Starting SMPP server...");
         smppServer.start();
@@ -116,16 +120,18 @@ public class ServerEchoMain {
     public static class DefaultSmppServerHandler implements SmppServerHandler {
 
         @Override
-        public void sessionBindRequested(Long sessionId, SmppSessionConfiguration sessionConfiguration, final BaseBind bindRequest) throws SmppProcessingException {
+        public void sessionBindRequested(Long sessionId, SmppSessionConfiguration sessionConfiguration,
+                final BaseBind bindRequest) throws SmppProcessingException {
             // test name change of sessions
             // this name actually shows up as thread context....
             sessionConfiguration.setName("Application.SMPP." + sessionConfiguration.getSystemId());
 
-            //throw new SmppProcessingException(SmppConstants.STATUS_BINDFAIL, null);
+            // throw new SmppProcessingException(SmppConstants.STATUS_BINDFAIL, null);
         }
 
         @Override
-        public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse) throws SmppProcessingException {
+        public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse)
+                throws SmppProcessingException {
             logger.info("Session created: {}", session);
             // need to do something it now (flag we're ready)
             session.serverReady(new TestSmppSessionHandler(session));
@@ -166,14 +172,16 @@ public class ServerEchoMain {
                 byte dataCoding = mt.getDataCoding();
                 byte[] shortMessage = mt.getShortMessage();
 
-                //sendDeliveryReceipt(session, mtDestinationAddress, mtSourceAddress, dataCoding);
+                // sendDeliveryReceipt(session, mtDestinationAddress, mtSourceAddress,
+                // dataCoding);
                 sendMoMessage(session, mtDestinationAddress, mtSourceAddress, shortMessage, dataCoding);
             }
 
             return response;
         }
 
-        private void sendDeliveryReceipt(SmppSession session, Address mtDestinationAddress, Address mtSourceAddress, byte dataCoding) {
+        private void sendDeliveryReceipt(SmppSession session, Address mtDestinationAddress, Address mtSourceAddress,
+                byte dataCoding) {
 
             DeliverSm deliver = new DeliverSm();
             deliver.setEsmClass(SmppConstants.ESM_CLASS_MT_SMSC_DELIVERY_RECEIPT);
@@ -183,7 +191,8 @@ public class ServerEchoMain {
             sendRequestPdu(session, deliver);
         }
 
-        private void sendMoMessage(SmppSession session, Address moSourceAddress, Address moDestinationAddress, byte [] textBytes, byte dataCoding) {
+        private void sendMoMessage(SmppSession session, Address moSourceAddress, Address moDestinationAddress,
+                byte[] textBytes, byte dataCoding) {
 
             DeliverSm deliver = new DeliverSm();
 
@@ -191,9 +200,9 @@ public class ServerEchoMain {
             deliver.setDestAddress(moDestinationAddress);
             deliver.setDataCoding(dataCoding);
             try {
-              deliver.setShortMessage(textBytes);
+                deliver.setShortMessage(textBytes);
             } catch (Exception e) {
-              logger.error("Error!", e);
+                logger.error("Error!", e);
             }
 
             sendRequestPdu(session, deliver);
@@ -201,16 +210,18 @@ public class ServerEchoMain {
 
         private void sendRequestPdu(SmppSession session, DeliverSm deliver) {
             try {
-                WindowFuture<Integer,PduRequest,PduResponse> future = session.sendRequestPdu(deliver, 10000, false);
+                WindowFuture<Integer, PduRequest, PduResponse> future = session.sendRequestPdu(deliver, 10000, false);
                 if (!future.await()) {
                     logger.error("Failed to receive deliver_sm_resp within specified time");
                 } else if (future.isSuccess()) {
-                   DeliverSmResp deliverSmResp = (DeliverSmResp)future.getResponse();
-                    logger.info("deliver_sm_resp: commandStatus [" + deliverSmResp.getCommandStatus() + "=" + deliverSmResp.getResultMessage() + "]");
+                    DeliverSmResp deliverSmResp = (DeliverSmResp) future.getResponse();
+                    logger.info("deliver_sm_resp: commandStatus [" + deliverSmResp.getCommandStatus() + "="
+                            + deliverSmResp.getResultMessage() + "]");
                 } else {
                     logger.error("Failed to properly receive deliver_sm_resp: " + future.getCause());
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
     }
 }

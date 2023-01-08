@@ -1,0 +1,105 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch ClientMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.ClientMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch DeliveryReceiptMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.DeliveryReceiptMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch ParserMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.ParserMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch PerformanceClientMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.PerformanceClientMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch QueryCancelMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.QueryCancelMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch RebindMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.RebindMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch ServerEchoMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.ServerEchoMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch ServerMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.ServerMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch SimulatorMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.SimulatorMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch SlowServerMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.SlowServerMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch SslClientMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.SslClientMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch SslServerMain",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.SslServerMain",
+            "projectName": "ch-smpp"
+        },
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "com.cloudhopper.smpp.demo.persist.Main",
+            "projectName": "ch-smpp"
+        }
+    ]
+}

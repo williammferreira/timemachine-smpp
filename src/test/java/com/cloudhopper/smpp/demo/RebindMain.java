@@ -37,7 +37,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
+ * @author joelauer (twitter: @jjlauer or
+ *         <a href="http://twitter.com/jjlauer" target=
+ *         window>http://twitter.com/jjlauer</a>)
  */
 public class RebindMain {
     private static final Logger logger = LoggerFactory.getLogger(RebindMain.class);
@@ -46,7 +48,7 @@ public class RebindMain {
 
         // a bootstrap can be shared (which will reused threads)
         // THIS VERSION USES "DAEMON" threads by default
-	// SmppSessionBootstrap bootstrap = new SmppSessionBootstrap();
+        // SmppSessionBootstrap bootstrap = new SmppSessionBootstrap();
         // THIS VERSION DOESN'T - WILL HANG JVM UNTIL CLOSED
         final DefaultSmppClient bootstrap = new DefaultSmppClient(Executors.newCachedThreadPool());
 
@@ -57,7 +59,7 @@ public class RebindMain {
         config0.setName("Tester.Session.0");
         config0.setType(SmppBindType.TRANSCEIVER);
         config0.setHost("localhost");
-        config0.setPort(2776);
+        config0.setPort(2775);
         config0.setConnectTimeout(10000);
         config0.setSystemId("smppclient1");
         config0.setPassword("password");
@@ -92,12 +94,11 @@ public class RebindMain {
 
         };
 
-
         ExecutorService bindExecutor = Executors.newSingleThreadExecutor();
         bindExecutor.submit(bindRunnable);
 
-        //Thread bindThread = new Thread(bindRunnable);
-        //bindThread.start();
+        // Thread bindThread = new Thread(bindRunnable);
+        // bindThread.start();
 
         System.out.println("Press any key to shutdown the threads");
         System.in.read();
@@ -113,7 +114,6 @@ public class RebindMain {
         // this also makes sure all open Channels are closed to I *think*
         logger.info("trying to shutdown bootstrap...");
         bootstrap.destroy();
-
 
         System.out.println("Press any key to exit");
         System.in.read();
@@ -132,7 +132,7 @@ public class RebindMain {
             // ignore for now (already logged)
             return pduRequest.createResponse();
         }
-        
+
     }
-    
+
 }

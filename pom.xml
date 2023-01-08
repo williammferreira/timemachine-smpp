@@ -24,7 +24,7 @@
     </parent>
     
     <properties>
-        <main.java.package>com.cloudhopper.smpp</main.java.package>
+        <main.java.package>com.timemachine.smppclient</main.java.package>
         <ch-commons-util.version>6.0.2</ch-commons-util.version>
         <ch-commons-charset.version>3.0.2</ch-commons-charset.version>
         <ch-commons-gsm.version>3.0.0</ch-commons-gsm.version>

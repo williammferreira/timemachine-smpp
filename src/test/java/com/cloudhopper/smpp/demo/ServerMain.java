@@ -44,7 +44,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
+ * @author joelauer (twitter: @jjlauer or
+ *         <a href="http://twitter.com/jjlauer" target=
+ *         window>http://twitter.com/jjlauer</a>)
  */
 public class ServerMain {
     private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
@@ -53,27 +55,31 @@ public class ServerMain {
         //
         // setup 3 things required for a server
         //
-        
+
         // for monitoring thread use, it's preferable to create your own instance
-        // of an executor and cast it to a ThreadPoolExecutor from Executors.newCachedThreadPool()
+        // of an executor and cast it to a ThreadPoolExecutor from
+        // Executors.newCachedThreadPool()
         // this permits exposing things like executor.getActiveCount() via JMX possible
-        // no point renaming the threads in a factory since underlying Netty 
+        // no point renaming the threads in a factory since underlying Netty
         // framework does not easily allow you to customize your thread names
-        ThreadPoolExecutor executor = (ThreadPoolExecutor)Executors.newCachedThreadPool();
-        
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+
         // to enable automatic expiration of requests, a second scheduled executor
         // is required which is what a monitor task will be executed with - this
-        // is probably a thread pool that can be shared with between all client bootstraps
-        ScheduledThreadPoolExecutor monitorExecutor = (ScheduledThreadPoolExecutor)Executors.newScheduledThreadPool(1, new ThreadFactory() {
-            private AtomicInteger sequence = new AtomicInteger(0);
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r);
-                t.setName("SmppServerSessionWindowMonitorPool-" + sequence.getAndIncrement());
-                return t;
-            }
-        }); 
-        
+        // is probably a thread pool that can be shared with between all client
+        // bootstraps
+        ScheduledThreadPoolExecutor monitorExecutor = (ScheduledThreadPoolExecutor) Executors.newScheduledThreadPool(1,
+                new ThreadFactory() {
+                    private AtomicInteger sequence = new AtomicInteger(0);
+
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread t = new Thread(r);
+                        t.setName("SmppServerSessionWindowMonitorPool-" + sequence.getAndIncrement());
+                        return t;
+                    }
+                });
+
         // create a server configuration
         SmppServerConfiguration configuration = new SmppServerConfiguration();
         configuration.setPort(2776);
@@ -85,9 +91,10 @@ public class ServerMain {
         configuration.setDefaultWindowWaitTimeout(configuration.getDefaultRequestExpiryTimeout());
         configuration.setDefaultSessionCountersEnabled(true);
         configuration.setJmxEnabled(true);
-        
+
         // create a server, start it up
-        DefaultSmppServer smppServer = new DefaultSmppServer(configuration, new DefaultSmppServerHandler(), executor, monitorExecutor);
+        DefaultSmppServer smppServer = new DefaultSmppServer(configuration, new DefaultSmppServerHandler(), executor,
+                monitorExecutor);
 
         logger.info("Starting SMPP server...");
         smppServer.start();
@@ -99,23 +106,25 @@ public class ServerMain {
         logger.info("Stopping SMPP server...");
         smppServer.stop();
         logger.info("SMPP server stopped");
-        
+
         logger.info("Server counters: {}", smppServer.getCounters());
     }
 
     public static class DefaultSmppServerHandler implements SmppServerHandler {
 
         @Override
-        public void sessionBindRequested(Long sessionId, SmppSessionConfiguration sessionConfiguration, final BaseBind bindRequest) throws SmppProcessingException {
+        public void sessionBindRequested(Long sessionId, SmppSessionConfiguration sessionConfiguration,
+                final BaseBind bindRequest) throws SmppProcessingException {
             // test name change of sessions
             // this name actually shows up as thread context....
             sessionConfiguration.setName("Application.SMPP." + sessionConfiguration.getSystemId());
 
-            //throw new SmppProcessingException(SmppConstants.STATUS_BINDFAIL, null);
+            // throw new SmppProcessingException(SmppConstants.STATUS_BINDFAIL, null);
         }
 
         @Override
-        public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse) throws SmppProcessingException {
+        public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse)
+                throws SmppProcessingException {
             logger.info("Session created: {}", session);
             // need to do something it now (flag we're ready)
             session.serverReady(new TestSmppSessionHandler(session));
@@ -128,7 +137,7 @@ public class ServerMain {
             if (session.hasCounters()) {
                 logger.info(" final session rx-submitSM: {}", session.getCounters().getRxSubmitSM());
             }
-            
+
             // make sure it's really shutdown
             session.destroy();
         }
@@ -136,24 +145,25 @@ public class ServerMain {
     }
 
     public static class TestSmppSessionHandler extends DefaultSmppSessionHandler {
-        
+
         private WeakReference<SmppSession> sessionRef;
-        
+
         public TestSmppSessionHandler(SmppSession session) {
             this.sessionRef = new WeakReference<SmppSession>(session);
         }
-        
+
         @Override
         public PduResponse firePduRequestReceived(PduRequest pduRequest) {
             SmppSession session = sessionRef.get();
-            
+
             // mimic how long processing could take on a slower smsc
             try {
-                //Thread.sleep(50);
-            } catch (Exception e) { }
-            
+                // Thread.sleep(50);
+            } catch (Exception e) {
+            }
+
             return pduRequest.createResponse();
         }
     }
-    
+
 }

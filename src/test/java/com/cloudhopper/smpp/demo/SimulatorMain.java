@@ -30,14 +30,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
+ * @author joelauer (twitter: @jjlauer or
+ *         <a href="http://twitter.com/jjlauer" target=
+ *         window>http://twitter.com/jjlauer</a>)
  */
 public class SimulatorMain {
     private static final Logger logger = LoggerFactory.getLogger(SimulatorMain.class);
 
     static public void main(String[] args) throws Exception {
         SmppSimulatorServer server = new SmppSimulatorServer();
-        server.start(2776);
+        server.start(2775);
         logger.info("SMPP simulator server started");
 
         // wait for a session
@@ -65,5 +67,5 @@ public class SimulatorMain {
         }
 
     }
-    
+
 }

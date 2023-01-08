@@ -37,19 +37,21 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
+ * @author joelauer (twitter: @jjlauer or
+ *         <a href="http://twitter.com/jjlauer" target=
+ *         window>http://twitter.com/jjlauer</a>)
  */
 public class SlowServerMain {
     private static final Logger logger = LoggerFactory.getLogger(SlowServerMain.class);
 
     private static final long DELAY_BEFORE_RESPONSE = 3000;
-    
+
     static public void main(String[] args) throws Exception {
         SmppServerConfiguration configuration = new SmppServerConfiguration();
-        configuration.setPort(2776);
+        configuration.setPort(2775);
         configuration.setMaxConnectionSize(10);
         configuration.setNonBlockingSocketsEnabled(false);
-        
+
         SmppServer smppServer = new DefaultSmppServer(configuration, new DefaultSmppServerHandler());
 
         logger.info("About to start SMPP server");
@@ -66,13 +68,15 @@ public class SlowServerMain {
 
     public static class DefaultSmppServerHandler implements SmppServerHandler {
         @Override
-        public void sessionBindRequested(Long sessionId, SmppSessionConfiguration sessionConfiguration, final BaseBind bindRequest) throws SmppProcessingException {
+        public void sessionBindRequested(Long sessionId, SmppSessionConfiguration sessionConfiguration,
+                final BaseBind bindRequest) throws SmppProcessingException {
             // this name actually shows up as thread context....
             sessionConfiguration.setName("Application.SMPP." + sessionId);
         }
 
         @Override
-        public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse) throws SmppProcessingException {
+        public void sessionCreated(Long sessionId, SmppServerSession session, BaseBindResp preparedBindResponse)
+                throws SmppProcessingException {
             logger.info("Session created: {}", session);
             // need to do something it now (flag we're ready)
             session.serverReady(new SlowSmppSessionHandler());
@@ -90,11 +94,12 @@ public class SlowServerMain {
         public PduResponse firePduRequestReceived(PduRequest pduRequest) {
             try {
                 Thread.sleep(DELAY_BEFORE_RESPONSE);
-            } catch (Exception e) { }
-            
+            } catch (Exception e) {
+            }
+
             // ignore for now (already logged)
             return pduRequest.createResponse();
         }
     }
-    
+
 }

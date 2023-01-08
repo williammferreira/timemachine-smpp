@@ -34,3 +34,9 @@ persist-client:
 
 server-echo:
 	mvn -e test-compile exec:java -Dexec.classpathScope="test" -Dexec.mainClass="com.cloudhopper.smpp.demo.ServerEchoMain"
+
+custom-server:
+	mvn -e compile exec:java -Dexec.mainClass="com.timemachine.smppclient.ServerMain"
+
+custom-client:
+	mvn -e compile exec:java -Dexec.mainClass="com.timemachine.smppclient.SmppClient"

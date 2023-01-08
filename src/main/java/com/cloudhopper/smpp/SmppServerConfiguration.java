@@ -26,7 +26,9 @@ import com.cloudhopper.smpp.type.SmppConnectionConfiguration;
 /**
  * Configuration of an SMPP server.
  * 
- * @author joelauer (twitter: @jjlauer or <a href="http://twitter.com/jjlauer" target=window>http://twitter.com/jjlauer</a>)
+ * @author joelauer (twitter: @jjlauer or
+ *         <a href="http://twitter.com/jjlauer" target=
+ *         window>http://twitter.com/jjlauer</a>)
  */
 public class SmppServerConfiguration extends SmppConnectionConfiguration {
 
@@ -35,7 +37,7 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     private boolean useSsl = false;
     private SslConfiguration sslConfiguration;
     // length of time to wait for a bind request
-    private long bindTimeout;       
+    private long bindTimeout;
     private String systemId;
     // if true, <= 3.3 for interface version normalizes to version 3.3
     // if true, >= 3.4 for interface version normalizes to version 3.4 and
@@ -92,7 +94,7 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     public void setJmxEnabled(boolean jmxEnabled) {
         this.jmxEnabled = jmxEnabled;
     }
-    
+
     public boolean isReuseAddress() {
         return reuseAddress;
     }
@@ -106,10 +108,11 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     }
 
     /**
-     * Sets if non-blocking (NIO) is used for this server.  If true, then the
+     * Sets if non-blocking (NIO) is used for this server. If true, then the
      * NIO server socket is used for Netty, otherwise the normal blocking
      * server socket will be used.
-     * @param nonBlockingSocketsEnabled True if enabled, otherwise false 
+     * 
+     * @param nonBlockingSocketsEnabled True if enabled, otherwise false
      */
     public void setNonBlockingSocketsEnabled(boolean nonBlockingSocketsEnabled) {
         this.nonBlockingSocketsEnabled = nonBlockingSocketsEnabled;
@@ -122,6 +125,7 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     /**
      * Set the maximum number of connections this server is configured to
      * handle.
+     * 
      * @param maxConnectionSize Max number of connections. Must be >= 1
      */
     public void setMaxConnectionSize(int maxConnectionSize) {
@@ -133,7 +137,8 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
 
     /**
      * Set the name of the server that is used for some logging and naming of
-     * threads.  The default is "SmppServer".
+     * threads. The default is "SmppServer".
+     * 
      * @param value The name of this server
      */
     public void setName(String value) {
@@ -145,27 +150,28 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     }
 
     public void setUseSsl(boolean value) {
-	this.useSsl = value;
+        this.useSsl = value;
     }
 
-    public boolean isUseSsl() { 
-	return this.useSsl;
+    public boolean isUseSsl() {
+        return this.useSsl;
     }
 
     public void setSslConfiguration(SslConfiguration value) {
-	this.sslConfiguration = value;
-	setUseSsl(true);
+        this.sslConfiguration = value;
+        setUseSsl(true);
     }
 
     public SslConfiguration getSslConfiguration() {
-	return this.sslConfiguration;
+        return this.sslConfiguration;
     }
 
     /**
      * Set the amount of time to allow a connection to finish binding into the
      * server before the server automatically closes the connection.
+     * 
      * @param value The number of milliseconds to wait for a bind to be established
-     *      before a socket will be closed.
+     *              before a socket will be closed.
      */
     public void setBindTimeout(long value) {
         this.bindTimeout = value;
@@ -177,6 +183,7 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
 
     /**
      * Set the system id that will be returned in a bind response.
+     * 
      * @param value The system id to return in a bind response
      */
     public void setSystemId(String value) {
@@ -192,10 +199,12 @@ public class SmppServerConfiguration extends SmppConnectionConfiguration {
     }
 
     /**
-     * Enables or disables auto sc_interface_version negotiation.  If the
-     * version from the client <= 3.3 then the client version is 3.3.  If the
+     * Enables or disables auto sc_interface_version negotiation. If the
+     * version from the client <= 3.3 then the client version is 3.3. If the
      * version from the client >= 3.4 then the client version will be 3.4 and
-     * the prepared bind response will include the optional parameter sc_interface_version.
+     * the prepared bind response will include the optional parameter
+     * sc_interface_version.
+     * 
      * @param autoNegotiateInterfaceVersion
      */
     public void setAutoNegotiateInterfaceVersion(boolean autoNegotiateInterfaceVersion) {
